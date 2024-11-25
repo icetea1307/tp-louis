@@ -59,3 +59,29 @@ tcp      LISTEN    0         128                          [::]:22               
 ```
 ### 2. Tester la restauration du snapshot :
 ```
+sudo lvcreate --size 500.00mo --snapshot --name snap /dev/vg_secure/secure_data
+```
+```
+[root@localhost ~]# ls /mnt/secure_data/
+[root@localhost ~]# sudo rm /mnt/secure_data/sensitive2.txt
+[root@localhost ~]# sudo mkdir /mnt/snapshot
+[root@localhost ~]# sudo mount /dev/vg_secure/snap /mnt/snapshot
+[root@localhost ~]# cp /mnt/snapshot/sensitive2.txt /mnt/secure_data/
+[root@localhost ~]# sudo umount /mnt/snapshot/
+[root@localhost ~]# sudo vgdisplay
+```
+
+
+### 3 .Optimiser l’espace disque :
+```
+[root@localhost ~]# lvextend --size +10.00m /dev/vg_secure/secure_data
+  Rounding size to boundary between physical extents: 12.00 MiB.
+  Size of logical volume vg_secure/secure_data changed from 500.00 MiB (125 extents) to 512.00 MiB (128 extents).
+  Logical volume vg_secure/secure_data successfully resized.
+```
+### Etape 3.Automatisation avec un script de sauvegarde
+### 1.Créer un script secure_backup.sh :
+```
+[root@localhost ~]# sudo nano /usr/local/bin/secure_backup.sh
+[root@localhost ~]# sudo chmod +x /usr/local/secure_backup.sh
+
