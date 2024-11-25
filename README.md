@@ -123,3 +123,22 @@ echo "Sauvegarde créée : $BACKUP_FILE" >> "$LOG_FILE"
 secure_data_2024111227.tar.gz     secure_data_20241125_1230.tar.gz  secure_data_20241125_1232.tar.gz  secure_data_20241125_1234.tar.gz
 secure_data_20241125_1229.tar.gz  secure_data_20241125_1231.tar.gz  secure_data_20241125_1233.tar.gz
 ```
+### 4.Automatisez avec une tâche cron :
+```
+[root@localhost ~]# sudo crontab -e
+no crontab for root - using an empty one
+crontab: installing new crontab
+1 3 * * * /usr/local/bin/secure_backup.sh
+```
+### Étape 4 : Surveillance avancée avec auditd
+
+### 1.Configurer auditd pour surveiller /etc :
+```
+[root@localhost ~]# sudo auditctl -w /etc -p wa -k etc_changes
+Old style watch rules are slower
+```
+### 2.Tester la surveillance
+```
+[root@localhost ~]# sudo auditctl -l
+-w /etc -p wa -k etc_changes
+```
