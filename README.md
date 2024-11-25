@@ -85,3 +85,41 @@ sudo lvcreate --size 500.00mo --snapshot --name snap /dev/vg_secure/secure_data
 [root@localhost ~]# sudo nano /usr/local/bin/secure_backup.sh
 [root@localhost ~]# sudo chmod +x /usr/local/secure_backup.sh
 
+```
+```
+2.
+#!/bin/bash
+
+Variables
+SOURCEDIR="/mnt/secure_data"
+BACKUP_DIR="/backup"
+DATE=$(date +%Y%m%d%H%M)
+BACKUPFILE="$BACKUP_DIR/secure_data$DATE.tar.gz"
+MAX_BACKUPS=7
+LOG_FILE="/var/log/backup.log"
+
+Création de l'archive en excluant les fichiers temporaires et cachés
+tar --exclude='.tmp' --exclude='.log' --exclude='.*' -czf "$BACKUP_FILE" -C "$SOURCE_DIR" . >> "$LOG_FILE" 2>&1
+
+Fonction de rotation des sauvegardes
+rotate_backups() {
+    cd "$BACKUP_DIR" || exit
+    if [ $(ls -1 | wc -l) -gt $MAX_BACKUPS ]; then
+        ls -tp | grep -v '/$' | tail -n +$((MAX_BACKUPS + 1)) | xargs -I {} rm -- {}
+    fi
+}
+
+Appel de la fonction de rotation
+rotate_backups
+
+echo "Sauvegarde créée : $BACKUP_FILE" >> "$LOG_FILE"
+```
+```
+3.Testez le script :
+```
+```
+[root@localhost ~]# sudo /usr/local/bin/secure_backup.sh
+[root@localhost ~]# ls /backup
+secure_data_2024111227.tar.gz     secure_data_20241125_1230.tar.gz  secure_data_20241125_1232.tar.gz  secure_data_20241125_1234.tar.gz
+secure_data_20241125_1229.tar.gz  secure_data_20241125_1231.tar.gz  secure_data_20241125_1233.tar.gz
+```
